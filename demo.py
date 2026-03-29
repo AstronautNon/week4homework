@@ -206,6 +206,48 @@ def generate_seating_chart(student_list, filename="考场座位表.txt"):
         print(f"❌ 写入文件时发生错误: {e}")
 
 
+def generate_admission_tickets(student_list, output_folder="准考证"):
+    """
+    为每个学生生成一个独立的准考证文件
+    文件名格式：01.txt, 02.txt, ...
+    """
+
+    if not student_list:
+        print("错误：学生名单为空！")
+        return
+
+    # 1. 创建“准考证”文件夹
+    # exist_ok=True 表示如果文件夹已经存在，不会报错
+    os.makedirs(output_folder, exist_ok=True)
+
+    print(f"\n--- 正在生成准考证 ---")
+
+    # 2. 遍历学生列表（假设此时学生列表已经是排好座位的顺序）
+    # enumerate(..., 1) 表示序号从 1 开始
+    for seat_num, student in enumerate(student_list, 1):
+
+        # 3. 生成文件名：例如 "01.txt", "12.txt"
+        # f"{seat_num:02d}" 的作用是：将数字格式化为至少两位，不足补0
+        filename = f"{seat_num:02d}.txt"
+        # 拼接完整的文件路径 (例如: 准考证/01.txt)
+        file_path = os.path.join(output_folder, filename)
+
+        # 4. 写入文件内容
+        try:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write("====== 准考证信息 ======\n")
+                f.write(f"座位号: {seat_num}\n")
+                f.write(f"姓名:   {student.name}\n")
+                f.write(f"学号:   {student.student_id}\n")
+                f.write("========================")
+
+            # 打印进度（可选）
+            print(f"已生成: {filename} ({student.name})")
+
+        except Exception as e:
+            print(f"❌ 生成 {filename} 失败: {e}")
+
+    print(f"\n✅ 所有准考证已生成在 '{output_folder}' 文件夹中！")
 
 # --- 主程序入口 ---
 if __name__ == "__main__":
@@ -223,5 +265,7 @@ if __name__ == "__main__":
         random_roll_call(all_students)
         # 启动生成考场安排功能
         generate_seating_chart(all_students)
+        # 启动创建准考证功能
+        generate_admission_tickets(all_students)
     else:
         print("未加载到任何数据。")
