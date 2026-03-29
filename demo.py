@@ -35,7 +35,6 @@ def read_students_from_file(filename):
         with open(filename, 'r', encoding='utf-8') as file:
             # 1. 读取第一行（标题行）
             header = file.readline()
-            print(f"文件标题: {header.strip()}")
 
             # 2. 逐行读取剩余内容
             for line in file:
@@ -75,6 +74,33 @@ def read_students_from_file(filename):
     return students
 
 
+def search_student(student_list):
+    """
+    实现查找功能的函数
+    """
+    while True:
+        # 1. 获取用户输入
+        target_id = input("\n请输入要查询的学号 (输入 'q' 退出): ").strip()
+
+        # 退出机制
+        if target_id.lower() == 'q':
+            break
+
+        # 2. 遍历查找
+        found = False
+        for student in student_list:
+            if student.student_id == target_id:
+                # 3. 找到则打印并跳出循环
+                print("\n" + "=" * 30)
+                print(student)  # 这里会自动调用 __str__ 方法
+                print("=" * 30)
+                found = True
+                break
+
+        # 4. 未找到提示
+        if not found:
+            print(f"未找到学号为 {target_id} 的学生，请重试。")
+
 # --- 主程序入口 ---
 if __name__ == "__main__":
     # 指定文件名
@@ -83,5 +109,9 @@ if __name__ == "__main__":
     # 调用函数读取数据
     all_students = read_students_from_file(filename)
 
-    print(f"\n--- 共读取到 {len(all_students)} 个学生信息 ---")
-
+    if all_students:
+        print(f"\n--- 共读取到 {len(all_students)} 个学生信息 ---")
+        # 2. 启动查找功能
+        search_student(all_students)
+    else:
+        print("未加载到任何数据。")
