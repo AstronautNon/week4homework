@@ -1,6 +1,7 @@
 #外部库导入区
 import random
-
+import datetime
+import os
 
 #Studen类定义区
 class Student:
@@ -162,6 +163,47 @@ def random_roll_call(student_list):
         break
 
 
+def generate_seating_chart(student_list, filename="考场座位表.txt"):
+    """
+    生成考场座位表：
+    1. 将学生名单乱序排列
+    2. 分配座位号 (1 到 n)
+    3. 写入文件，第一行为生成时间
+    """
+
+    if not student_list:
+        print("错误：学生名单为空，无法生成座位表！")
+        return
+
+    # 1. 获取当前时间
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # 2. 复制一份名单并打乱顺序 (使用切片 [:] 复制，避免修改原始名单顺序)
+    shuffled_students = student_list[:]
+    random.shuffle(shuffled_students)
+
+    # 3. 写入文件
+    try:
+        with open(filename, 'w', encoding='utf-8') as f:
+            # 写入第一行：文件生成时间
+            f.write(f"生成时间: {current_time}\n")
+            # 写入表头
+            f.write(f"{'座位号':<10}{'姓名':<10}{'学号':<15}\n")
+            f.write("-" * 35 + "\n")  # 分隔线
+
+            # 遍历打乱后的列表，分配座位号
+            for index, student in enumerate(shuffled_students, 1):
+                # 格式化输出：座位号 | 姓名 | 学号
+                # <10 表示左对齐并占用10个字符宽度，为了排版整齐
+                line = f"{index:<10}{student.name:<10}{student.student_id:<15}\n"
+                f.write(line)
+
+        print(f"✅ 成功！座位表已生成。")
+        print(f"📂 文件保存位置: {os.path.abspath(filename)}")
+        print(f"⏰ 生成时间: {current_time}")
+
+    except Exception as e:
+        print(f"❌ 写入文件时发生错误: {e}")
 
 
 
@@ -179,5 +221,7 @@ if __name__ == "__main__":
         search_student(all_students)
         # 启动点名功能
         random_roll_call(all_students)
+        # 启动生成考场安排功能
+        generate_seating_chart(all_students)
     else:
         print("未加载到任何数据。")
