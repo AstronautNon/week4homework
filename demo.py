@@ -1,3 +1,8 @@
+#外部库导入区
+import random
+
+
+#Studen类定义区
 class Student:
     """
     学生数据类
@@ -25,6 +30,9 @@ class Student:
         return f"[学生] 姓名:{self.name}, 学号:{self.student_id}, 班级:{self.class_num}, 学院:{self.college}, 性别:{self.gender}"
 
 
+
+
+#功能函数区
 def read_students_from_file(filename):
     """
     读取文件并创建学生对象列表的函数
@@ -73,7 +81,6 @@ def read_students_from_file(filename):
 
     return students
 
-
 def search_student(student_list):
     """
     实现查找功能的函数
@@ -101,6 +108,63 @@ def search_student(student_list):
         if not found:
             print(f"未找到学号为 {target_id} 的学生，请重试。")
 
+def random_roll_call(student_list):
+    """
+    实现随机点名功能：
+    1. 输入点名人数
+    2. 验证输入（必须是数字，且不能大于总人数）
+    3. 随机抽取不重复的学生
+    """
+
+    total_count = len(student_list)
+
+    if total_count == 0:
+        print("名单为空，无法点名！")
+        return
+
+    print(f"\n--- 随机点名系统 ---")
+    print(f"当前班级总人数: {total_count}")
+
+    while True:
+        user_input = input("请输入要抽取的学生人数: ")
+
+        # 1. 处理非数字字符输入
+        if not user_input.isdigit():
+            print("❌ 输入无效：请输入一个正整数（例如 1, 5）。")
+            continue
+
+        # 将输入转换为整数
+        num_to_pick = int(user_input)
+
+        # 2. 处理数字大于总人数的情况
+        if num_to_pick > total_count:
+            print(f"❌ 人数过多：班级总共只有 {total_count} 人，请输入小于或等于 {total_count} 的数字。")
+            continue
+
+        # 3. 处理数字为 0 或负数的情况 (虽然 isdigit 排除了负数，但逻辑上要排除 0)
+        if num_to_pick <= 0:
+            print("❌ 输入无效：抽取人数必须大于 0。")
+            continue
+
+        # --- 输入验证通过，开始点名 ---
+        print(f"\n🎲 正在随机抽取 {num_to_pick} 位同学...\n")
+
+        # 核心算法：random.sample
+        # 作用：从列表中随机抽取指定数量的元素，且保证不重复
+        selected_students = random.sample(student_list, num_to_pick)
+
+        print("=== 🎉 中奖名单 🎉 ===")
+        for i, student in enumerate(selected_students, 1):
+            print(f"{i}. {student}")  # 调用 __str__ 方法
+        print("======================")
+
+        # 点名结束后退出循环
+        break
+
+
+
+
+
 # --- 主程序入口 ---
 if __name__ == "__main__":
     # 指定文件名
@@ -111,7 +175,9 @@ if __name__ == "__main__":
 
     if all_students:
         print(f"\n--- 共读取到 {len(all_students)} 个学生信息 ---")
-        # 2. 启动查找功能
+        # 启动查找功能
         search_student(all_students)
+        # 启动点名功能
+        random_roll_call(all_students)
     else:
         print("未加载到任何数据。")
